@@ -323,11 +323,27 @@ export function convertMessagesToVercelAISDKMessages(
         : [];
 
       for (const toolCall of message.toolCalls ?? []) {
+        let parsedInput: Record<string, unknown>;
+        try {
+          const rawArgs = toolCall.function.arguments;
+          if (!rawArgs) {
+            console.warn(
+              `Tool call ${toolCall.function.name} had empty arguments, defaulting to {}`,
+            );
+          }
+          parsedInput = JSON.parse(rawArgs || "{}");
+        } catch (error) {
+          console.error(
+            `Failed to parse tool call arguments for ${toolCall.function.name}: ${toolCall.function.arguments}`,
+            error,
+          );
+          parsedInput = {};
+        }
         const toolCallPart: ToolCallPart = {
           type: "tool-call",
           toolCallId: toolCall.id,
           toolName: toolCall.function.name,
-          input: JSON.parse(toolCall.function.arguments || "{}"),
+          input: parsedInput,
         };
         parts.push(toolCallPart);
       }

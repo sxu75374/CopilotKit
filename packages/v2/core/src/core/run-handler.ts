@@ -306,7 +306,13 @@ export class RunHandler {
     if (tool?.handler) {
       let parsedArgs: unknown;
       try {
-        parsedArgs = JSON.parse(toolCall.function.arguments || "{}");
+        const rawArgs = toolCall.function.arguments;
+        if (!rawArgs) {
+          console.warn(
+            `Tool call ${toolCall.id} (${toolCall.function.name}) had empty arguments, defaulting to {}`,
+          );
+        }
+        parsedArgs = JSON.parse(rawArgs || "{}");
       } catch (error) {
         const parseError =
           error instanceof Error ? error : new Error(String(error));
@@ -445,7 +451,13 @@ export class RunHandler {
     if (wildcardTool?.handler) {
       let parsedArgs: unknown;
       try {
-        parsedArgs = JSON.parse(toolCall.function.arguments || "{}");
+        const rawArgs = toolCall.function.arguments;
+        if (!rawArgs) {
+          console.warn(
+            `Tool call ${toolCall.id} (${toolCall.function.name}) had empty arguments, defaulting to {}`,
+          );
+        }
+        parsedArgs = JSON.parse(rawArgs || "{}");
       } catch (error) {
         const parseError =
           error instanceof Error ? error : new Error(String(error));
