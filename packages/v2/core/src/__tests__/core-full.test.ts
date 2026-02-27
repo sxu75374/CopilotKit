@@ -254,6 +254,7 @@ describe("CopilotKitCore.runAgent - Full Test Suite", () => {
       const tool = createTool({
         name: "emptyArgsTool",
         handler: vi.fn(async (args) => `Received: ${JSON.stringify(args)}`),
+        followUp: false,
       });
       copilotKitCore.addTool(tool);
 
@@ -277,14 +278,17 @@ describe("CopilotKitCore.runAgent - Full Test Suite", () => {
         agent: agent as any,
       });
 
-      try {
-        await copilotKitCore.runAgent({ agent: agent as any });
-        console.log("TEST 8: ERROR - Should have thrown on empty string!");
-        expect(true).toBe(false);
-      } catch (error) {
-        console.log(`TEST 8: Success - caught error: ${error}`);
-        expect(tool.handler).not.toHaveBeenCalled();
-      }
+      // Empty string arguments should be treated as empty object, not crash
+      await copilotKitCore.runAgent({ agent: agent as any });
+      console.log("TEST 8: Success - empty args treated as {}");
+      expect(tool.handler).toHaveBeenCalledWith(
+        {},
+        expect.objectContaining({
+          toolCall: expect.objectContaining({
+            id: "empty-args-call",
+          }),
+        }),
+      );
     });
 
     it("TEST 9: should handle chain of follow-ups", async () => {

@@ -84,6 +84,7 @@ describe("CopilotKitCore.runAgent - Edge Cases", () => {
     const tool = createTool({
       name: "emptyArgsTool",
       handler: vi.fn(async (args) => `Received: ${JSON.stringify(args)}`),
+      followUp: false,
     });
     copilotKitCore.addTool(tool);
 
@@ -107,9 +108,17 @@ describe("CopilotKitCore.runAgent - Edge Cases", () => {
       agent: agent as any,
     });
 
-    await expect(
-      copilotKitCore.runAgent({ agent: agent as any }),
-    ).rejects.toThrow();
+    // Empty string arguments should be treated as empty object, not crash
+    await copilotKitCore.runAgent({ agent: agent as any });
+
+    expect(tool.handler).toHaveBeenCalledWith(
+      {},
+      expect.objectContaining({
+        toolCall: expect.objectContaining({
+          id: "empty-args-call",
+        }),
+      }),
+    );
   });
 
   it("should handle very large tool result", async () => {

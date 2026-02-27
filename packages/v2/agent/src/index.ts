@@ -327,7 +327,7 @@ export function convertMessagesToVercelAISDKMessages(
           type: "tool-call",
           toolCallId: toolCall.id,
           toolName: toolCall.function.name,
-          input: JSON.parse(toolCall.function.arguments),
+          input: JSON.parse(toolCall.function.arguments || "{}"),
         };
         parts.push(toolCallPart);
       }

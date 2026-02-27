@@ -306,7 +306,7 @@ export class RunHandler {
     if (tool?.handler) {
       let parsedArgs: unknown;
       try {
-        parsedArgs = JSON.parse(toolCall.function.arguments);
+        parsedArgs = JSON.parse(toolCall.function.arguments || "{}");
       } catch (error) {
         const parseError =
           error instanceof Error ? error : new Error(String(error));
@@ -445,7 +445,7 @@ export class RunHandler {
     if (wildcardTool?.handler) {
       let parsedArgs: unknown;
       try {
-        parsedArgs = JSON.parse(toolCall.function.arguments);
+        parsedArgs = JSON.parse(toolCall.function.arguments || "{}");
       } catch (error) {
         const parseError =
           error instanceof Error ? error : new Error(String(error));
